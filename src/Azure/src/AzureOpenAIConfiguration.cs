@@ -32,6 +32,8 @@ namespace LangChain.Providers.Azure
 
         public string? DeploymentID { get; set; }
 
+        public string? EmbeddingDeploymentID { get; set; }
+
         public AzureOpenAiChatSettings ChatSettings { get; set; } = new();
 
         public EmbeddingSettings EmbeddingSettings { get; init; } = new();

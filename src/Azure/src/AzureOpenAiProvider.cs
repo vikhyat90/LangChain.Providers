@@ -1,6 +1,7 @@
 using Azure;
 using Azure.AI.OpenAI;
 using OpenAI.Chat;
+using OpenAI.Embeddings;
 using System.ClientModel;
 
 namespace LangChain.Providers.Azure;
@@ -28,8 +29,9 @@ public class AzureOpenAiProvider : Provider
     [CLSCompliant(false)]
     public AzureOpenAIClient Client { get; set; }
 
-    
+
     public ChatClient ChatClient { get; set; }
+    public EmbeddingClient EmbeddingClient { get; set; }
 
     public AzureOpenAiConfiguration Configurations { get; }
 
@@ -41,7 +43,7 @@ public class AzureOpenAiProvider : Provider
     /// <param name="apiKey">API Key</param>
     /// <param name="endpoint">Azure Open AI Resource URI</param>
     /// <exception cref="ArgumentNullException"></exception>
-    public AzureOpenAiProvider(string apiKey, string endpoint, string deploymentID) : base(id: "AzureOpenAI")
+    public AzureOpenAiProvider(string apiKey, string endpoint, string deploymentID, string embeddingDeploymentID = null) : base(id: "AzureOpenAI")
     {
         Configurations = new AzureOpenAiConfiguration();
         ApiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
@@ -49,6 +51,9 @@ public class AzureOpenAiProvider : Provider
         DeploymentID = deploymentID ?? throw new ArgumentNullException(nameof(deploymentID));
         Client = new AzureOpenAIClient(new Uri(Endpoint), new ApiKeyCredential(ApiKey));
         ChatClient = Client.GetChatClient(DeploymentID);
+
+        if (!string.IsNullOrEmpty(embeddingDeploymentID))
+            EmbeddingClient = Client.GetEmbeddingClient(embeddingDeploymentID);
     }
 
     /// <summary>
@@ -63,8 +68,11 @@ public class AzureOpenAiProvider : Provider
         ApiKey = configuration.ApiKey ?? throw new ArgumentException("ApiKey is not defined", nameof(configuration));
         Endpoint = configuration.Endpoint ?? throw new ArgumentException("Endpoint is not defined", nameof(configuration));
         DeploymentID = configuration.DeploymentID ?? throw new ArgumentException("DeploymentID is not defined", nameof(configuration));
-        Client = new AzureOpenAIClient(new Uri(Endpoint), new ApiKeyCredential(ApiKey));      
+        Client = new AzureOpenAIClient(new Uri(Endpoint), new ApiKeyCredential(ApiKey));
         ChatClient = Client.GetChatClient(DeploymentID);
+
+        if (!string.IsNullOrEmpty(configuration.EmbeddingDeploymentID))
+            EmbeddingClient = Client.GetEmbeddingClient(configuration.EmbeddingDeploymentID);
     }
 
     #endregion

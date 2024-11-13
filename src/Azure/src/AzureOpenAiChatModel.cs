@@ -9,7 +9,7 @@ using System.Text.Json;
 using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using System.Text.Json.Serialization;
-using ChatToolCall = OpenAI.Chat.ChatToolCall;
+
 namespace LangChain.Providers.Azure;
 
 /// <summary>
